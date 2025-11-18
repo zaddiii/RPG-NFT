@@ -2,43 +2,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RPG NFT Mint</title>
-
-  <!-- TonConnect UI CDN -->
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RPG NFT Mint</title>
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 </head>
-<body style="background:#111; color:white; padding:20px; font-family:Arial, sans-serif;">
-  <h2>Mint RPG NFT (TON Testnet)</h2>
+<body style="background:#111;color:white;padding:20px;font-family:Arial, sans-serif;">
+<h2>Mint RPG NFT (TON Testnet)</h2>
+<div id="ton-connect"></div>
+<button id="mintBtn" style="display:none;margin-top:20px;padding:10px 20px;font-size:18px;">Mint NFT</button>
+<p id="status"></p>
 
-  <!-- Wallet button goes here -->
-  <div id="ton-connect"></div>
-
-  <button id="mintBtn" style="display:none; margin-top:20px; padding:10px 20px; font-size:18px;">
-    Mint RPG NFT
-  </button>
-
-  <p id="status"></p>
-
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
         manifestUrl: "https://zaddiii.github.io/RPG-NFT/tonconnect-manifest.json",
         buttonRootId: "ton-connect"
-      });
-
-      tonConnectUI.onStatusChange((wallet) => {
-        console.log("Wallet status changed:", wallet);
-        if (wallet) {
-          document.getElementById("mintBtn").style.display = "block";
-          document.getElementById("status").innerText = "Wallet connected: " + wallet.account?.address;
-        } else {
-          document.getElementById("mintBtn").style.display = "none";
-          document.getElementById("status").innerText = "";
-        }
-      });
     });
-  </script>
+
+    tonConnectUI.onStatusChange(wallet => {
+        console.log("Wallet status:", wallet);
+        if(wallet){
+            document.getElementById("mintBtn").style.display = "block";
+            document.getElementById("status").innerText = "Connected: " + wallet.account?.address;
+        } else {
+            document.getElementById("mintBtn").style.display = "none";
+            document.getElementById("status").innerText = "";
+        }
+    });
+});
+</script>
 </body>
 </html>
