@@ -3,43 +3,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mint RPG NFT — TON Testnet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RPG NFT Mint</title>
 
-  <!-- TonWeb (if needed) -->
-  <script src="https://unpkg.com/tonweb/dist/tonweb.js"></script>
-  <!-- TonConnect UI -->
-  <script src="https://unpkg.com/@tonconnect/ui@2"></script>
+  <!-- TonConnect UI CDN -->
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 </head>
-<body style="background: #111; color: white; padding: 20px; font-family: Arial, sans-serif;">
+<body style="background:#111; color:white; padding:20px; font-family:Arial, sans-serif;">
   <h2>Mint RPG NFT (TON Testnet)</h2>
 
-  <!-- Div where the connect wallet button will mount -->
-  <div id="connect"></div>
+  <!-- Wallet button goes here -->
+  <div id="ton-connect"></div>
 
-  <button id="mintBtn" style="margin-top: 20px; padding: 10px 20px; font-size: 18px; display: none;">
+  <button id="mintBtn" style="display:none; margin-top:20px; padding:10px 20px; font-size:18px;">
     Mint RPG NFT
   </button>
 
-  <p id="status" style="margin-top: 20px;"></p>
+  <p id="status"></p>
 
   <script>
-    // Initialize TonConnectUI
-    const tonConnectUI = new TonConnectUI.TonConnectUI({
-      manifestUrl: "https://zaddiii.github.io/RPG-NFT/tonconnect-manifest.json"
+    window.addEventListener('DOMContentLoaded', () => {
+      const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: "https://zaddiii.github.io/RPG-NFT/tonconnect-manifest.json",
+        buttonRootId: "ton-connect"
+      });
+
+      tonConnectUI.onStatusChange((wallet) => {
+        console.log("Wallet status changed:", wallet);
+        if (wallet) {
+          document.getElementById("mintBtn").style.display = "block";
+          document.getElementById("status").innerText = "Wallet connected: " + wallet.account?.address;
+        } else {
+          document.getElementById("mintBtn").style.display = "none";
+          document.getElementById("status").innerText = "";
+        }
+      });
     });
-
-    // Mount button
-    tonConnectUI.mountWalletButton(document.getElementById("connect"));
-
-    // Show mint button when connected
-    tonConnectUI.onStatusChange((wallet) => {
-      if (wallet) {
-        document.getElementById("mintBtn").style.display = "block";
-      }
-    });
-
-    // (Optional) your mint logic here…
   </script>
 </body>
 </html>
