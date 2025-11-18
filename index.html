@@ -4,82 +4,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mint RPG NFT (TON Testnet)</title>
+  <title>Mint RPG NFT — TON Testnet</title>
+
+  <!-- TonWeb (if needed) -->
   <script src="https://unpkg.com/tonweb/dist/tonweb.js"></script>
+  <!-- TonConnect UI -->
   <script src="https://unpkg.com/@tonconnect/ui@2"></script>
 </head>
-
-<body style="background:#111;color:white;font-family:Arial;padding:20px;">
+<body style="background: #111; color: white; padding: 20px; font-family: Arial, sans-serif;">
   <h2>Mint RPG NFT (TON Testnet)</h2>
 
-  <!-- TonConnect Wallet Button -->
+  <!-- Div where the connect wallet button will mount -->
   <div id="connect"></div>
 
-  <button id="mintBtn" style="margin-top:20px;padding:10px 20px;font-size:18px;display:none;">
+  <button id="mintBtn" style="margin-top: 20px; padding: 10px 20px; font-size: 18px; display: none;">
     Mint RPG NFT
   </button>
 
-  <p id="status" style="margin-top:20px;"></p>
+  <p id="status" style="margin-top: 20px;"></p>
 
   <script>
-    // Connect TON Wallet
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: "https://raw.githubusercontent.com/ton-connect/demo-dapp-with-react/master/public/tonconnect-manifest.json"
+    // Initialize TonConnectUI
+    const tonConnectUI = new TonConnectUI.TonConnectUI({
+      manifestUrl: "https://zaddiii.github.io/RPG-NFT/tonconnect-manifest.json"
     });
 
+    // Mount button
     tonConnectUI.mountWalletButton(document.getElementById("connect"));
 
-    // Toggle mint button only after wallet connection
-    tonConnectUI.onStatusChange(wallet => {
+    // Show mint button when connected
+    tonConnectUI.onStatusChange((wallet) => {
       if (wallet) {
         document.getElementById("mintBtn").style.display = "block";
       }
     });
 
-    // Mint Button
-    document.getElementById("mintBtn").onclick = async () => {
-      document.getElementById("status").innerHTML = "Minting NFT...";
-
-      const TonWeb = window.TonWeb;
-      const tonweb = new TonWeb(
-        new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC")
-      );
-
-      // ***** YOUR NFT METADATA *****
-      const contentUri = "https://your-json-metadata-url.com/rpg-nft.json";
-
-      // Create NFT contract instance
-      const NFT = TonWeb.token.nft;
-      const collection = new NFT.NftCollection(tonweb.provider, {
-        ownerAddress: tonConnectUI.account.address,
-        royalty: 0,
-        royaltyAddress: tonConnectUI.account.address,
-        collectionContentUri: "https://zaddiii.github.io/RPG-NFT/",
-        nftItemContentBaseUri: contentUri,
-      });
-
-      const deployAmount = TonWeb.utils.toNano("0.05");
-
-      // Send transaction to deploy + create NFT
-      const tx = {
-        validUntil: Math.floor(Date.now() / 1000) + 600,
-        messages: [
-          {
-            address: collection.address.toString(true, true, true),
-            amount: deployAmount.toString(),
-            payload: ""
-          }
-        ]
-      };
-
-      try {
-        await tonConnectUI.sendTransaction(tx);
-        document.getElementById("status").innerHTML =
-          "NFT Minted Successfully! Check TON Testnet Explorer.";
-      } catch (e) {
-        document.getElementById("status").innerHTML = "Error: " + e;
-      }
-    };
+    // (Optional) your mint logic here…
   </script>
 </body>
 </html>
