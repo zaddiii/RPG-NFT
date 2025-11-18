@@ -1,0 +1,11 @@
+
+{
+  "name": "Sword of Eternity",
+  "description": "An epic RPG weapon forged in darkness.",
+  "image": "https://YOUR_IMAGE_URL.png",
+  "attributes": {
+    "attack": 90,
+    "defense": 40,
+    "rarity": "Legendary"
+  }
+}
