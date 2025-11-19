@@ -1,7 +1,8 @@
-
 // deploy.js
-import { TonClient, WalletContractV3R2, Account } from "ton";
+import ton from "ton";
 import fs from "fs";
+
+const { TonClient, WalletContractV3R2, Account } = ton;
 
 // === CONFIG ===
 
@@ -29,9 +30,6 @@ async function deployNFT() {
 
     console.log("Wallet address (to fund with test TON):", wallet.address.toString());
 
-    // Make sure your wallet has some testnet TON
-    // You can use TON Surf Testnet Faucet or TON Labs Testnet faucet
-
     // Deploy NFT
     const nftInitData = {
         _metadata: [METADATA_URL] // single NFT metadata
@@ -41,7 +39,6 @@ async function deployNFT() {
 
     const deployTx = await wallet.createDeployMessage({
         initParams: nftInitData,
-        // TVC file not needed if using SDK default NFT contract
     });
 
     const sendResult = await client.sendMessage(deployTx);
