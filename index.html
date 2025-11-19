@@ -8,6 +8,7 @@
 
 <!-- TonConnect UI -->
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+
 <!-- TonWeb -->
 <script src="https://unpkg.com/tonweb/dist/tonweb.js"></script>
 
@@ -29,6 +30,7 @@
 <script>
 window.addEventListener('DOMContentLoaded', () => {
   const status = document.getElementById("status");
+  let connectedWallet = null;  // << store wallet correctly
 
   // Initialize TonConnect UI
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
@@ -36,39 +38,50 @@ window.addEventListener('DOMContentLoaded', () => {
     buttonRootId: "ton-connect"
   });
 
-  // Show mint button only when wallet is connected
+  // Detect wallet connection
   tonConnectUI.onStatusChange(wallet => {
     console.log("Wallet status:", wallet);
+
     if(wallet){
+      connectedWallet = wallet; // << save it
+
       document.getElementById("mintBtn").style.display = "block";
-      status.innerText = "Connected: " + wallet.account?.address;
+      status.innerText = "Connected: " + wallet.account.address;
     } else {
+      connectedWallet = null;
       document.getElementById("mintBtn").style.display = "none";
       status.innerText = "";
     }
   });
 
-  // Mint button logic
+  // Mint NFT
   document.getElementById("mintBtn").onclick = async () => {
+    if(!connectedWallet){
+      alert("Connect wallet first.");
+      return;
+    }
+
     status.innerText = "Minting NFT...";
 
     const TonWeb = window.TonWeb;
-    const tonweb = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC"));
+    const tonweb = new TonWeb(
+      new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC")
+    );
 
     const NFT = TonWeb.token.nft;
 
-    // NFT collection
+    // NFT Collection (static address for test only; otherwise must deploy first)
     const collection = new NFT.NftCollection(tonweb.provider, {
-      ownerAddress: tonConnectUI.account.address,
+      ownerAddress: connectedWallet.account.address,
       royalty: 0,
-      royaltyAddress: tonConnectUI.account.address,
+      royaltyAddress: connectedWallet.account.address,
       collectionContentUri: "https://zaddiii.github.io/RPG-NFT/",
       nftItemContentBaseUri: "https://zaddiii.github.io/RPG-NFT/rpg-nft.json"
     });
 
-    // Transaction amount (in testnet TON)
     const deployAmount = TonWeb.utils.toNano("0.05");
 
+    // Build transaction
     const tx = {
       validUntil: Math.floor(Date.now() / 1000) + 600,
       messages: [
@@ -82,7 +95,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     try {
       await tonConnectUI.sendTransaction(tx);
-      status.innerText = "✅ NFT Minted! Check TON testnet explorer.";
+      status.innerText = "✅ NFT Minted! Check TON Testnet Explorer.";
     } catch(e){
       console.error(e);
       status.innerText = "❌ Mint failed: " + e;
