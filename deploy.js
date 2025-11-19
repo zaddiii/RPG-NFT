@@ -1,21 +1,36 @@
 
-import TonWeb from "tonweb";
+import { TonClient, WalletContractV3R2 } from "ton";
 import fs from "fs";
 
-const tonweb = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC")); // TON testnet
-
-const PRIVATE_KEY = process.env.TON_PRIVATE_KEY; // save key as Render secret
-const PUBLIC_KEY = process.env.TON_PUBLIC_KEY;
+// ⚠️ These should be set in Render Environment Variables
+const PRIVATE_KEY = process.env.TON_PRIVATE_KEY; // hex format
+const PUBLIC_KEY = process.env.TON_PUBLIC_KEY;   // hex format
 
 async function deployNFT() {
-    const wallet = new TonWeb.wallet.all.v3R2({ publicKey: PUBLIC_KEY, secretKey: PRIVATE_KEY });
+    // Connect to TON testnet
+    const client = new TonClient({ endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC" });
 
-    // Example: Load compiled TVC (FunC compiled contract)
-    const tvc = fs.readFileSync("./warriors.tvc"); // your contract file
-    const initialData = {}; // contract init params
+    // Initialize wallet
+    const wallet = new WalletContractV3R2({
+        publicKey: Buffer.from(PUBLIC_KEY, "hex"),
+        workchain: 0
+    });
 
-    const deployTx = await wallet.deployContract({ tvc, initParams: initialData });
-    console.log("Deployed contract at address:", deployTx.address);
+    // Load compiled NFT contract TVC
+    const tvc = fs.readFileSync("./warrior.tvc");
+
+    // Your NFT metadata IPFS URL
+    const metadataUrl = "ipfs://bafkreicrfqwi4hx7mxyuobdwagzlycpj2lduir65wqcu5j6znwkgevk2wm";
+
+    // Deploy the NFT contract with metadata
+    const deployTx = await wallet.deployContract({
+        tvc,
+        initParams: {
+            _metadata: [metadataUrl]  // array, even for single NFT
+        }
+    });
+
+    console.log("NFT deployed at address:", deployTx.address.toString());
 }
 
-deployNFT();
+deployNFT().catch(console.error);
