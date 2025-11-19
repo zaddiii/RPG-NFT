@@ -6,6 +6,6 @@
     "deploy": "node deploy.js"
   },
   "dependencies": {
-  "ton": "^1.45.0",
-  "tonweb": "^1.0.0"
+    "tonweb": "^1.0.0"
+  }
 }
