@@ -1,11 +1,21 @@
 
 {
-  "name": "Sword of Eternity",
-  "description": "An epic RPG weapon forged in darkness.",
-  "image": "https://YOUR_IMAGE_URL.png",
-  "attributes": {
-    "attack": 90,
-    "defense": 40,
-    "rarity": "Legendary"
-  }
+  "name": "Warriors",
+  "symbol": "RPG",
+  "description": "Warriors NFT collection for RPG game",
+  "image": "ipfs://bafkreiezwardbqvhokvqt5nchpgjtclyx7nusc7ptcvqnqhwafc5ksuy5e",
+  "attributes": [
+    {
+      "trait_type": "attack",
+      "value": 90
+    },
+    {
+      "trait_type": "defense",
+      "value": 40
+    },
+    {
+      "trait_type": "rarity",
+      "value": "Legendary"
+    }
+  ]
 }
