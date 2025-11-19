@@ -1,0 +1,12 @@
+
+{
+  "name": "rpg-nft",
+  "version": "1.0.0",
+  "scripts": {
+    "deploy": "node deploy.js"
+  },
+  "dependencies": {
+    "ton": "^1.46.0",
+    "tonweb": "^1.0.0"
+  }
+}
