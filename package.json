@@ -7,6 +7,6 @@
     "deploy": "node deploy.js"
   },
   "dependencies": {
-    "ton": "^1.45.0"
+    "ton": "^13.9.0"
   }
 }
