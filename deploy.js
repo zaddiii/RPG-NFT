@@ -1,34 +1,52 @@
 
-import { TonClient, WalletContractV3R2 } from "ton";
+// deploy.js
+import { TonClient, WalletContractV3R2, Account } from "ton";
 import fs from "fs";
 
-// Your public key in hex
-const PUBLIC_KEY = process.env.TON_PUBLIC_KEY; // e.g., "0a1b2c3d..." hex string
+// === CONFIG ===
+
+// Your wallet public key (64 hex characters, no 0x)
+const PUBLIC_KEY = "b33cc6ed629a4523928a01f7a436b0dcfb40f6dd77cc0e3f7a4f7e2a2d89bbea";
+
+// Workchain (usually 0)
+const WORKCHAIN = 0;
+
+// TON Testnet endpoint
+const client = new TonClient({ endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC" });
+
+// NFT metadata URL (IPFS)
+const METADATA_URL = "ipfs://bafkreicrfqwi4hx7mxyuobdwagzlycpj2lduir65wqcu5j6znwkgevk2wm";
+
+// Convert public key to buffer
+const pubKeyBuffer = Buffer.from(PUBLIC_KEY, "hex");
 
 async function deployNFT() {
-    const client = new TonClient({ endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC" });
-
-    // Wallet initialization
+    // Initialize wallet
     const wallet = new WalletContractV3R2({
-        publicKey: Buffer.from(PUBLIC_KEY, "hex"), // convert hex string to Buffer
-        workchain: 0
+        publicKey: pubKeyBuffer,
+        workchain: WORKCHAIN
     });
 
-    // Load compiled NFT contract TVC
-    const tvc = fs.readFileSync("./warrior.tvc");
+    console.log("Wallet address (to fund with test TON):", wallet.address.toString());
 
-    // Your NFT metadata IPFS URL
-    const metadataUrl = "ipfs://bafkreicrfqwi4hx7mxyuobdwagzlycpj2lduir65wqcu5j6znwkgevk2wm";
+    // Make sure your wallet has some testnet TON
+    // You can use TON Surf Testnet Faucet or TON Labs Testnet faucet
 
-    // Deploy the NFT contract
-    const deployTx = await wallet.deployContract({
-        tvc,
-        initParams: {
-            _metadata: [metadataUrl]  // array for single NFT
-        }
+    // Deploy NFT
+    const nftInitData = {
+        _metadata: [METADATA_URL] // single NFT metadata
+    };
+
+    console.log("Deploying NFT...");
+
+    const deployTx = await wallet.createDeployMessage({
+        initParams: nftInitData,
+        // TVC file not needed if using SDK default NFT contract
     });
 
-    console.log("NFT deployed at address:", deployTx.address.toString());
+    const sendResult = await client.sendMessage(deployTx);
+
+    console.log("NFT deployment transaction sent:", sendResult);
 }
 
 deployNFT().catch(console.error);
